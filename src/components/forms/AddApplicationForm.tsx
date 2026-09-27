@@ -4,10 +4,11 @@ import {
   applicationSchema,
   type ApplicationFormValues,
 } from "../../lib/validation";
-import { useAppStore } from "../../store/appStore";
+import { useCreateApplication } from "../../hooks/useApplications";
 
 export function AddApplicationForm({ onDone }: { onDone: () => void }) {
-  const addApplication = useAppStore((s) => s.addApplication);
+  const { mutate: createApplication, isPending } = useCreateApplication();
+
   const {
     register,
     handleSubmit,
@@ -18,8 +19,11 @@ export function AddApplicationForm({ onDone }: { onDone: () => void }) {
   });
 
   const onSubmit = (values: ApplicationFormValues) => {
-    addApplication(values);
-    onDone();
+    createApplication(values, {
+      onSuccess: () => {
+        onDone();
+      },
+    });
   };
 
   return (
@@ -29,6 +33,7 @@ export function AddApplicationForm({ onDone }: { onDone: () => void }) {
           {...register("company")}
           placeholder="Company"
           className="w-full rounded border p-2"
+          disabled={isPending}
         />
         {errors.company && (
           <p className="text-sm text-red-600">{errors.company.message}</p>
@@ -40,6 +45,7 @@ export function AddApplicationForm({ onDone }: { onDone: () => void }) {
           {...register("role")}
           placeholder="Role"
           className="w-full rounded border p-2"
+          disabled={isPending}
         />
         {errors.role && (
           <p className="text-sm text-red-600">{errors.role.message}</p>
@@ -51,13 +57,18 @@ export function AddApplicationForm({ onDone }: { onDone: () => void }) {
           type="date"
           {...register("appliedDate")}
           className="w-full rounded border p-2"
+          disabled={isPending}
         />
         {errors.appliedDate && (
           <p className="text-sm text-red-600">{errors.appliedDate.message}</p>
         )}
       </div>
 
-      <select {...register("stage")} className="w-full rounded border p-2">
+      <select
+        {...register("stage")}
+        className="w-full rounded border p-2"
+        disabled={isPending}
+      >
         <option value="applied">Applied</option>
         <option value="interview">Interview</option>
         <option value="offer">Offer</option>
@@ -68,10 +79,15 @@ export function AddApplicationForm({ onDone }: { onDone: () => void }) {
         {...register("notes")}
         placeholder="Notes (optional)"
         className="w-full rounded border p-2"
+        disabled={isPending}
       />
 
-      <button type="submit" className="rounded bg-(--text) py-2 text-(--bg)">
-        Add application
+      <button
+        type="submit"
+        disabled={isPending}
+        className="rounded bg-(--text) py-2 text-(--bg) disabled:opacity-50 cursor-pointer"
+      >
+        {isPending ? "Adding..." : "Add application"}
       </button>
     </form>
   );
