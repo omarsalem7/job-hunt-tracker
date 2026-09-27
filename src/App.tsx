@@ -4,6 +4,7 @@ import { PublicRoute } from "./components/auth/PublicRoute";
 import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import { DashboardPage } from "./pages/DashboardPage";
+import { ContactsPage } from "./pages/ContactsPage";
 
 function App() {
   return (
@@ -33,6 +34,16 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Contacts Route */}
+        <Route
+          path="/contacts"
+          element={
+            <ProtectedRoute>
+              <ContactsPage />
             </ProtectedRoute>
           }
         />

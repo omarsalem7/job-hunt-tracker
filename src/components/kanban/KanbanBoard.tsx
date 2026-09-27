@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import type { Application, Stage } from "../../types";
 import {
@@ -5,6 +6,7 @@ import {
   useDeleteApplication,
 } from "../../hooks/useApplications";
 import { KanbanColumn } from "./KanbanColumn";
+import { ApplicationContactsModal } from "../contacts/ApplicationContactsModal";
 
 const STAGES: Stage[] = ["applied", "interview", "offer", "rejected"];
 
@@ -15,6 +17,8 @@ interface KanbanBoardProps {
 export function KanbanBoard({ applications }: KanbanBoardProps) {
   const { mutate: updateStage } = useUpdateStage();
   const { mutate: deleteApplication } = useDeleteApplication();
+  const [selectedAppForContacts, setSelectedAppForContacts] =
+    useState<Application | null>(null);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -27,17 +31,26 @@ export function KanbanBoard({ applications }: KanbanBoardProps) {
   };
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 p-6 overflow-x-auto">
-        {STAGES.map((stage) => (
-          <KanbanColumn
-            key={stage}
-            stage={stage}
-            applications={applications.filter((a) => a.stage === stage)}
-            onDelete={(id) => deleteApplication(id)}
-          />
-        ))}
-      </div>
-    </DndContext>
+    <>
+      <DndContext onDragEnd={handleDragEnd}>
+        <div className="flex gap-4 p-6 overflow-x-auto">
+          {STAGES.map((stage) => (
+            <KanbanColumn
+              key={stage}
+              stage={stage}
+              applications={applications.filter((a) => a.stage === stage)}
+              onDelete={(id) => deleteApplication(id)}
+              onViewContacts={(app) => setSelectedAppForContacts(app)}
+            />
+          ))}
+        </div>
+      </DndContext>
+
+      <ApplicationContactsModal
+        application={selectedAppForContacts}
+        isOpen={Boolean(selectedAppForContacts)}
+        onClose={() => setSelectedAppForContacts(null)}
+      />
+    </>
   );
 }

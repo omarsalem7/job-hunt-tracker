@@ -13,10 +13,12 @@ export function KanbanColumn({
   stage,
   applications,
   onDelete,
+  onViewContacts,
 }: {
   stage: Stage;
   applications: Application[];
   onDelete: (id: string | number) => void;
+  onViewContacts?: (application: Application) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
 
@@ -32,7 +34,12 @@ export function KanbanColumn({
       </h2>
       <div className="flex flex-col gap-2">
         {applications.map((app) => (
-          <ApplicationCard key={app.id} application={app} onDelete={onDelete} />
+          <ApplicationCard
+            key={app.id}
+            application={app}
+            onDelete={onDelete}
+            onViewContacts={onViewContacts}
+          />
         ))}
       </div>
     </div>

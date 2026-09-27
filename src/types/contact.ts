@@ -1,26 +1,31 @@
 export interface Contact {
     id: string | number;
-    applicationId?: string | number;
+    userId?: number;
+    applicationId?: number | null;
     name: string;
-    email?: string;
-    phone?: string;
-    company?: string;
-    role?: string;
-    linkedIn?: string;
-    notes?: string;
+    email?: string | null;
+    phone?: string | null;
+    role?: string | null;
+    linkedInUrl?: string | null;
+    notes?: string | null;
     createdAt?: string;
     updatedAt?: string;
+    application?: {
+        id: number | string;
+        company: string;
+        role: string;
+    } | null;
 }
 
 export interface CreateContactDto {
-    applicationId?: string | number;
     name: string;
     email?: string;
     phone?: string;
-    company?: string;
     role?: string;
-    linkedIn?: string;
+    linkedInUrl?: string;
     notes?: string;
+    applicationId?: number | null;
 }
 
-export interface UpdateContactDto extends Partial<CreateContactDto> {}
+export interface UpdateContactDto extends Partial<CreateContactDto> { }
+

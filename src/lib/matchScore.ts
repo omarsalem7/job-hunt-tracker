@@ -1,4 +1,4 @@
-import type { MatchResult } from './types'
+import type { MatchResult } from '../types'
 
 const STOP_WORDS = new Set(['the', 'and', 'a', 'an', 'to', 'of', 'in', 'for', 'with', 'on', 'is', 'are'])
 

@@ -1,4 +1,4 @@
-import type { Application, Stage } from './types'
+import type { Application, Stage } from '../types'
 
 export const dummyApplications: Application[] = [
     { id: '1', company: 'Acme Corp', role: 'Frontend Engineer', stage: 'applied', appliedDate: '2026-08-10' },

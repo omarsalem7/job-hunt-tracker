@@ -1,4 +1,5 @@
 import { useDeferredValue, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { KanbanBoard } from "../components/kanban/KanbanBoard";
 import { AddApplicationForm } from "../components/forms/AddApplicationForm";
 import { CommandPalette } from "../components/command-palette/CommandPalette";
@@ -50,10 +51,24 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-(--bg) text-(--text)">
-      <header className="flex items-center justify-between gap-4 border-b border-(--border) px-6 py-4">
-        <h1 className="text-lg font-medium text-gray-900 dark:text-white">
-          Job Hunt Command Center
-        </h1>
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-(--border) px-6 py-4">
+        <div className="flex items-center gap-6">
+          <h1 className="text-lg font-bold">Job Hunt Command Center</h1>
+          <nav className="flex items-center gap-2">
+            <Link
+              to="/"
+              className="rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400"
+            >
+              Applications
+            </Link>
+            <Link
+              to="/contacts"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            >
+              Contacts
+            </Link>
+          </nav>
+        </div>
         <input
           id="search-input"
           value={search}
