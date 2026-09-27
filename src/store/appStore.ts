@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Application, Stage } from '../lib/types'
+import type { Application, Stage } from '../types'
 import { persist } from 'zustand/middleware'
 
 interface AppStore {

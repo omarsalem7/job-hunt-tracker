@@ -1,33 +1,19 @@
 // src/api/applications.ts
 import { apiClient } from './client';
-import type { Application, Stage } from '../lib/types';
+import type {
+    Application,
+    Stage,
+    CreateApplicationDto,
+    UpdateStageDto,
+    PaginatedResponse,
+} from '../types';
 
-export interface CreateApplicationDto {
-    company: string;
-    role: string;
-    stage: Stage;
-    appliedDate: string;
-    notes?: string;
-}
-
-export interface UpdateStageDto {
-    stage: Stage;
-}
-
-export interface PaginatedApplicationsResponse {
-    data: Application[];
-    meta?: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-    };
-}
+export type { CreateApplicationDto, UpdateStageDto };
 
 export const applicationsApi = {
     // GET /applications
     getAll: async (): Promise<Application[]> => {
-        const response = await apiClient<PaginatedApplicationsResponse | Application[]>('/applications');
+        const response = await apiClient<PaginatedResponse<Application> | Application[]>('/applications');
         return Array.isArray(response) ? response : (response.data ?? []);
     },
 

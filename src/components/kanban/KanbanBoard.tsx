@@ -1,5 +1,5 @@
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
-import type { Application, Stage } from "../../lib/types";
+import type { Application, Stage } from "../../types";
 import {
   useUpdateStage,
   useDeleteApplication,

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { calculateMatchScore } from '../lib/matchScore'
-import type { MatchResult } from '../lib/types'
+import type { MatchResult } from '../types'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 

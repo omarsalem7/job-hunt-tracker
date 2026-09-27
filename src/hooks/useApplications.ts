@@ -1,7 +1,7 @@
 // src/hooks/useApplications.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { applicationsApi, type CreateApplicationDto } from '../api/applications';
-import type { Stage } from '../lib/types';
+import type { Stage } from '../types';
 
 export const APPLICATIONS_QUERY_KEY = ['applications'] as const;
 

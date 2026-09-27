@@ -1,22 +1,7 @@
 import { apiClient, tokenStorage } from './client';
+import type { AuthUser, AuthResponse, AuthCredentials } from '../types';
 
-export interface AuthUser {
-    id: number;
-    email: string;
-    createdAt?: string;
-    updatedAt?: string;
-}
-
-export interface AuthResponse {
-    message?: string;
-    user: AuthUser;
-    accessToken: string;
-}
-
-export interface AuthCredentials {
-    email: string;
-    password: string;
-}
+export type { AuthUser, AuthResponse, AuthCredentials };
 
 export const authApi = {
     register: async (credentials: AuthCredentials): Promise<AuthResponse> => {

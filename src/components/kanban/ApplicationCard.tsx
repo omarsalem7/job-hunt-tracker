@@ -1,13 +1,13 @@
 import { useDraggable } from "@dnd-kit/core";
 import { memo } from "react";
-import type { Application } from "../../lib/types";
+import type { Application } from "../../types";
 
 export const ApplicationCard = memo(function ApplicationCard({
   application,
   onDelete,
 }: {
   application: Application;
-  onDelete: (id: string) => void;
+  onDelete: (id: string | number) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: application.id });

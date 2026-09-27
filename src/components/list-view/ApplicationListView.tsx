@@ -1,5 +1,5 @@
 import { List, type RowComponentProps } from "react-window";
-import type { Application } from "../../lib/types";
+import type { Application } from "../../types";
 
 function Row({
   index,

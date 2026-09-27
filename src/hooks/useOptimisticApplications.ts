@@ -1,6 +1,6 @@
 import { useOptimistic, useTransition, useState, useRef, useCallback } from 'react'
 import { useAppStore } from '../store/appStore'
-import type { Application } from '../lib/types'
+import type { Application } from '../types'
 
 type Action = { type: 'remove'; id: string }
 

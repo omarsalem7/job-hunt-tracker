@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import type { Application, Stage } from "../../lib/types";
+import type { Application, Stage } from "../../types";
 import { ApplicationCard } from "./ApplicationCard";
 
 const STAGE_LABELS: Record<Stage, string> = {
@@ -16,7 +16,7 @@ export function KanbanColumn({
 }: {
   stage: Stage;
   applications: Application[];
-  onDelete: (id: string) => void;
+  onDelete: (id: string | number) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
 
