@@ -4,6 +4,7 @@ import { PublicRoute } from "./components/auth/PublicRoute";
 import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import { DashboardPage } from "./pages/DashboardPage";
+import { SharedBoardPage } from "./pages/SharedBoardPage";
 
 function App() {
   return (
@@ -26,6 +27,9 @@ function App() {
             </PublicRoute>
           }
         />
+
+        {/* Public Shared Board Route */}
+        <Route path="/share/:token" element={<SharedBoardPage />} />
 
         {/* Protected Dashboard Route */}
         <Route

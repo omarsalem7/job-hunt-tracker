@@ -16,7 +16,9 @@ import {
   SearchIcon,
   PlusIcon,
   BriefcaseIcon,
+  ShareIcon,
 } from "../components/common/Icons";
+import { ShareModal } from "../components/share/ShareModal";
 import { useTheme } from "../hooks/useTheme";
 import { ErrorBoundary } from "../components/ErrorBoundary/ErrorBoundary";
 import { useAuth } from "../hooks/useAuth";
@@ -43,6 +45,7 @@ export function DashboardPage() {
   const { theme, toggleTheme } = useTheme();
 
   const [showScorer, setShowScorer] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Compute search & tag filtering once at the parent level
   const filteredApplications = useMemo(() => {
@@ -91,6 +94,11 @@ export function DashboardPage() {
       id: "manage-tags",
       label: "Manage tags",
       action: () => setShowTagManager(true),
+    },
+    {
+      id: "share-board",
+      label: "Share board",
+      action: () => setShowShareModal(true),
     },
     {
       id: "focus-search",
@@ -153,6 +161,16 @@ export function DashboardPage() {
               className="rounded-lg border border-(--border) bg-(--card-bg) px-3 py-1.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors shadow-xs"
             >
               Match score
+            </button>
+
+            {/* Share Board Button */}
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-(--border) bg-(--card-bg) px-3 py-1.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors shadow-xs"
+              title="Share board with recruiters or mentors"
+            >
+              <ShareIcon size={13} className="text-blue-600 dark:text-blue-400" />
+              <span>Share</span>
             </button>
 
             {/* Theme Toggle */}
@@ -325,6 +343,12 @@ export function DashboardPage() {
       <TagManagerModal
         isOpen={showTagManager}
         onClose={() => setShowTagManager(false)}
+      />
+
+      {/* Share Board Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
       />
 
       {/* Match Scorer Modal */}
