@@ -24,17 +24,19 @@ function Row({
         <span className="font-semibold text-(--text) hover:text-blue-600 transition-colors">
           {app.company}
         </span>
-        <span className="text-gray-500 dark:text-gray-400 text-xs">{app.role}</span>
+        <span className="text-gray-500 dark:text-gray-400 text-xs">
+          {app.role}
+        </span>
       </div>
 
       {/* Tags column */}
       <div className="flex items-center gap-1.5 flex-1 mx-4 overflow-hidden">
         {app.tags && app.tags.length > 0 ? (
-          app.tags.map((tag) => (
-            <TagBadge key={tag.id} tag={tag} size="sm" />
-          ))
+          app.tags.map((tag) => <TagBadge key={tag.id} tag={tag} size="sm" />)
         ) : (
-          <span className="text-xs text-gray-300 dark:text-gray-600 italic">No tags</span>
+          <span className="text-xs text-gray-300 dark:text-gray-600 italic">
+            No tags
+          </span>
         )}
       </div>
 
@@ -63,7 +65,6 @@ export function ApplicationListView({
       rowCount={applications.length}
       rowHeight={56}
       rowProps={{ applications, onSelectApplication }}
-      style={{ height: 800 }}
     />
   );
 }

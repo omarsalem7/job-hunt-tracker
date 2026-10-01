@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import type { Application, Contact, Stage } from "../../types";
-import { TagBadge } from "../tags/TagBadge";
 import { TagSelector } from "../tags/TagSelector";
 import { useSetApplicationTags, useUpdateStage } from "../../hooks/useApplications";
 import { useContactsQuery, useDeleteContact } from "../../hooks/useContacts";
@@ -14,6 +13,8 @@ import {
   ExternalLinkIcon,
   PlusIcon,
   XIcon,
+  PencilIcon,
+  TrashIcon,
 } from "../common/Icons";
 
 interface ApplicationDetailDrawerProps {
@@ -23,11 +24,31 @@ interface ApplicationDetailDrawerProps {
   onOpenTagManager?: () => void;
 }
 
-const STAGES: { value: Stage; label: string }[] = [
-  { value: "applied", label: "Applied" },
-  { value: "interview", label: "Interview" },
-  { value: "offer", label: "Offer" },
-  { value: "rejected", label: "Rejected" },
+const STAGES: {
+  value: Stage;
+  label: string;
+  activeBg: string;
+}[] = [
+  {
+    value: "applied",
+    label: "Applied",
+    activeBg: "bg-blue-600 text-white shadow-xs font-semibold",
+  },
+  {
+    value: "interview",
+    label: "Interview",
+    activeBg: "bg-amber-500 text-white shadow-xs font-semibold",
+  },
+  {
+    value: "offer",
+    label: "Offer",
+    activeBg: "bg-emerald-600 text-white shadow-xs font-semibold",
+  },
+  {
+    value: "rejected",
+    label: "Rejected",
+    activeBg: "bg-rose-600 text-white shadow-xs font-semibold",
+  },
 ];
 
 export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = ({
@@ -93,10 +114,10 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop with smooth blur */}
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-xs transition-opacity duration-300 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />
@@ -104,53 +125,68 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
       {/* Slide-over Drawer Panel */}
       <aside
         aria-label="Application details"
-        className={`fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] bg-(--bg) border-l border-(--border) shadow-2xl flex flex-col text-(--text) transform transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 right-0 z-50 w-full sm:w-[500px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col text-slate-900 dark:text-slate-100 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Drawer Header */}
-        <div className="flex items-start justify-between border-b border-(--border) p-5 bg-gray-50/50 dark:bg-gray-800/40">
-          <div className="min-w-0 flex-1 mr-4">
-            <h2 className="text-xl font-bold truncate text-(--text)">
-              {application.company}
-            </h2>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
-              {application.role}
-            </p>
-
-            {/* Stage Selector */}
-            <div className="mt-3 flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase text-gray-400">Stage:</span>
-              <select
-                value={application.stage}
-                onChange={(e) => handleStageChange(e.target.value as Stage)}
-                className="rounded-lg border border-(--border) bg-(--bg) px-2.5 py-1 text-xs font-semibold capitalize cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {STAGES.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
+        <div className="border-b border-slate-100 dark:border-slate-800 p-6 bg-white dark:bg-slate-900">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
+                {application.company}
+              </h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                {application.role}
+              </p>
             </div>
+
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-colors shrink-0"
+              title="Close drawer (Esc)"
+            >
+              <XIcon size={16} />
+            </button>
           </div>
 
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
-            title="Close drawer"
-          >
-            <XIcon size={18} />
-          </button>
+          {/* Interactive Stage Segmented Selector */}
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+            <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              Application Stage
+            </span>
+            <div className="grid grid-cols-4 gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-1 text-xs">
+              {STAGES.map((s) => {
+                const isActive = application.stage === s.value;
+                return (
+                  <button
+                    key={s.value}
+                    type="button"
+                    onClick={() => handleStageChange(s.value)}
+                    className={`rounded-lg py-1.5 text-center text-xs font-medium cursor-pointer transition-all ${
+                      isActive
+                        ? s.activeBg
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Drawer Body - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50 dark:bg-slate-900/50">
           {/* Metadata Card */}
-          <div className="flex items-center justify-between rounded-lg border border-(--border) p-3 bg-(--bg) text-xs">
+          <div className="grid grid-cols-2 gap-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-4 shadow-xs">
             <div>
-              <span className="text-gray-400 block mb-0.5">Date Applied</span>
-              <span className="font-semibold text-(--text)">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                Date Applied
+              </span>
+              <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 {new Date(application.appliedDate).toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "short",
@@ -159,71 +195,63 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
               </span>
             </div>
             <div>
-              <span className="text-gray-400 block mb-0.5">Application ID</span>
-              <span className="font-mono text-gray-500">#{application.id}</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                Application ID
+              </span>
+              <span className="font-mono text-xs font-medium text-slate-500 dark:text-slate-400">
+                #{application.id}
+              </span>
             </div>
           </div>
 
           {/* Tags Section */}
-          <section className="space-y-2.5">
+          <section className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <TagIcon size={16} className="text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-semibold text-(--text)">Tags</h3>
-                <span className="text-xs text-gray-400">
-                  ({application.tags?.length ?? 0})
+                <TagIcon size={15} className="text-blue-600 dark:text-blue-400" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Tags
+                </h3>
+                <span className="rounded-full bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  {application.tags?.length ?? 0}
                 </span>
               </div>
               {onOpenTagManager && (
                 <button
                   type="button"
                   onClick={onOpenTagManager}
-                  className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
                   Manage Tags
                 </button>
               )}
             </div>
 
-            {/* Currently assigned tags */}
-            {application.tags && application.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {application.tags.map((tag) => (
-                  <TagBadge
-                    key={tag.id}
-                    tag={tag}
-                    size="md"
-                    onRemove={() =>
-                      handleTagsChange(currentTagIds.filter((id) => id !== tag.id))
-                    }
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Tag Selector */}
+            {/* Tag Selector (Includes Chips + Dropdown Add) */}
             <TagSelector
               selectedTagIds={currentTagIds}
               onChange={handleTagsChange}
               onOpenManager={onOpenTagManager}
-              placeholder="Assign or create tags..."
+              placeholder="Select or create tags..."
             />
           </section>
 
           {/* Contacts Section */}
-          <section className="space-y-3 pt-4 border-t border-(--border)">
+          <section className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <UsersIcon size={16} className="text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-semibold text-(--text)">Contacts & Networking</h3>
-                <span className="text-xs text-gray-400">
-                  ({linkedContacts.length})
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Contacts & Networking
+                </h3>
+                <span className="rounded-full bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  {linkedContacts.length}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleAddContact}
-                className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-blue-700 cursor-pointer transition-colors"
+                className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 cursor-pointer shadow-xs transition-colors"
               >
                 <PlusIcon size={12} />
                 <span>Add Contact</span>
@@ -231,75 +259,84 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
             </div>
 
             {isLoadingContacts ? (
-              <div className="py-6 text-center text-xs text-gray-400">
+              <div className="py-6 text-center text-xs text-slate-400">
                 Loading contacts...
               </div>
             ) : linkedContacts.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-(--border) p-5 text-center">
-                <p className="text-xs text-gray-500">
+              <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 p-6 text-center bg-slate-50/50 dark:bg-slate-900/40">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   No contacts linked to this application yet.
                 </p>
                 <button
                   type="button"
                   onClick={handleAddContact}
-                  className="mt-2 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                  className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
-                  Add recruiter, referrer, or interviewer
+                  + Add recruiter, referrer, or interviewer
                 </button>
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {linkedContacts.map((contact) => (
                   <div
                     key={contact.id}
-                    className="rounded-lg border border-(--border) p-3 bg-gray-50/60 dark:bg-gray-800/40 text-xs space-y-1.5 hover:border-gray-300 dark:hover:border-gray-700 transition-colors"
+                    className="rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 p-3.5 shadow-xs space-y-2.5 transition-all hover:border-slate-300 dark:hover:border-slate-600"
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-semibold text-sm text-(--text)">
-                          {contact.name}
-                        </h4>
-                        {contact.role && (
-                          <p className="text-gray-500 dark:text-gray-400">
-                            {contact.role}
-                          </p>
-                        )}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-bold text-xs uppercase shadow-xs">
+                          {contact.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-sm text-slate-900 dark:text-white">
+                            {contact.name}
+                          </h4>
+                          {contact.role && (
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                              {contact.role}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
+
+                      {/* Contact Action Buttons */}
+                      <div className="flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => handleEditContact(contact)}
-                          className="text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer"
+                          className="rounded-lg p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer transition-colors"
+                          title="Edit contact"
                         >
-                          Edit
+                          <PencilIcon size={13} />
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteContact(contact.id, contact.name)}
-                          className="text-red-500 hover:underline cursor-pointer"
+                          className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 cursor-pointer transition-colors"
+                          title="Delete contact"
                         >
-                          Delete
+                          <TrashIcon size={13} />
                         </button>
                       </div>
                     </div>
 
-                    {/* Contact Channels */}
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-gray-600 dark:text-gray-300">
+                    {/* Contact Communication Channels */}
+                    <div className="flex flex-wrap gap-2 text-xs">
                       {contact.email && (
                         <a
                           href={`mailto:${contact.email}`}
-                          className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-2.5 py-1 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 transition-colors"
                         >
-                          <MailIcon size={13} />
-                          <span>{contact.email}</span>
+                          <MailIcon size={12} className="text-blue-500" />
+                          <span className="truncate max-w-[200px]">{contact.email}</span>
                         </a>
                       )}
                       {contact.phone && (
                         <a
                           href={`tel:${contact.phone}`}
-                          className="hover:underline flex items-center gap-1.5"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-2.5 py-1 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 transition-colors"
                         >
-                          <PhoneIcon size={13} />
+                          <PhoneIcon size={12} className="text-slate-400" />
                           <span>{contact.phone}</span>
                         </a>
                       )}
@@ -308,16 +345,16 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
                           href={contact.linkedInUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 dark:border-blue-900/60 bg-blue-50/50 dark:bg-blue-950/40 px-2.5 py-1 text-blue-600 dark:text-blue-400 hover:underline transition-colors"
                         >
-                          <ExternalLinkIcon size={13} />
+                          <ExternalLinkIcon size={12} />
                           <span>LinkedIn</span>
                         </a>
                       )}
                     </div>
 
                     {contact.notes && (
-                      <p className="mt-1 rounded bg-(--bg) p-2 text-gray-600 dark:text-gray-300 border border-(--border) italic">
+                      <p className="rounded-lg bg-slate-50 dark:bg-slate-900/80 p-2.5 text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-750 italic leading-relaxed">
                         {contact.notes}
                       </p>
                     )}
@@ -328,27 +365,29 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
           </section>
 
           {/* Notes Section */}
-          <section className="space-y-2 pt-4 border-t border-(--border)">
+          <section className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-4 shadow-xs space-y-2">
             <div className="flex items-center gap-2">
-              <FileTextIcon size={16} className="text-blue-600 dark:text-blue-400" />
-              <h3 className="text-sm font-semibold text-(--text)">Notes</h3>
+              <FileTextIcon size={15} className="text-blue-600 dark:text-blue-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Application Notes
+              </h3>
             </div>
             {application.notes ? (
-              <div className="rounded-lg border border-(--border) p-3 bg-gray-50/50 dark:bg-gray-800/30 text-xs text-(--text) whitespace-pre-wrap leading-relaxed">
+              <div className="rounded-lg border border-slate-200 dark:border-slate-700/60 p-3 bg-slate-50/70 dark:bg-slate-900/50 text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                 {application.notes}
               </div>
             ) : (
-              <p className="text-xs text-gray-400 italic">No notes provided.</p>
+              <p className="text-xs text-slate-400 italic">No notes provided for this application.</p>
             )}
           </section>
         </div>
 
         {/* Drawer Footer */}
-        <div className="border-t border-(--border) p-4 flex justify-end bg-gray-50/50 dark:bg-gray-800/40">
+        <div className="border-t border-slate-100 dark:border-slate-800 p-4 flex justify-end bg-white dark:bg-slate-900">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-(--border) px-4 py-2 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 px-5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors shadow-xs"
           >
             Close
           </button>

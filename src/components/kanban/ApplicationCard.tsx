@@ -25,8 +25,8 @@ export const ApplicationCard = memo(function ApplicationCard({
       ref={setNodeRef}
       style={style}
       onClick={() => onClick(application)}
-      className={`group relative rounded-xl border border-(--border) bg-(--bg) p-3.5 shadow-xs transition-all duration-150 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer ${
-        isDragging ? "z-20 opacity-50 shadow-lg scale-102" : ""
+      className={`group relative rounded-xl border border-(--border) bg-(--card-bg) p-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-200 hover:shadow-md hover:border-blue-400/80 dark:hover:border-blue-500 hover:-translate-y-0.5 cursor-pointer ${
+        isDragging ? "z-20 opacity-60 shadow-xl scale-102" : ""
       }`}
     >
       <div
@@ -34,18 +34,18 @@ export const ApplicationCard = memo(function ApplicationCard({
         {...attributes}
         className="cursor-grab active:cursor-grabbing"
       >
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-2 pr-5">
           <p className="font-semibold text-sm text-(--text) leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {application.company}
           </p>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+        <p className="text-xs text-(--text-muted) mt-1 font-medium">
           {application.role}
         </p>
 
         {/* Tag Badges */}
         {application.tags && application.tags.length > 0 && (
-          <div className="mt-2.5 flex flex-wrap gap-1">
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
             {application.tags.map((tag) => (
               <TagBadge key={tag.id} tag={tag} size="sm" />
             ))}

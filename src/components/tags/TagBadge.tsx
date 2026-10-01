@@ -1,6 +1,6 @@
 import React from "react";
 import type { Tag } from "../../types";
-import { getContrastTextColor } from "../../lib/tagColors";
+import { getTagColorStyles } from "../../lib/tagColors";
 import { XIcon } from "../common/Icons";
 
 interface TagBadgeProps {
@@ -20,26 +20,32 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
   selected,
   className = "",
 }) => {
-  const color = tag.color || "#3B82F6";
-  const textColor = getContrastTextColor(color);
+  const styles = getTagColorStyles(tag.color);
 
   const sizeClasses =
     size === "sm"
-      ? "text-[11px] px-2 py-0.5 font-medium"
-      : "text-xs px-2.5 py-1 font-medium";
+      ? "text-[11px] px-2 py-0.5 gap-1.5 font-medium"
+      : "text-xs px-2.5 py-1 gap-1.5 font-medium";
 
   return (
     <span
       onClick={onClick}
       style={{
-        backgroundColor: color,
-        color: textColor,
+        backgroundColor: selected ? styles.border : styles.bg,
+        borderColor: styles.border,
+        color: styles.text,
       }}
-      className={`inline-flex items-center gap-1 rounded-full transition-all shadow-xs ${sizeClasses} ${
-        onClick ? "cursor-pointer hover:opacity-90 active:scale-95" : ""
-      } ${selected ? "ring-2 ring-offset-1 ring-blue-500 font-semibold" : ""} ${className}`}
+      className={`inline-flex items-center rounded-full border transition-all duration-150 select-none ${sizeClasses} ${
+        onClick ? "cursor-pointer hover:brightness-95 active:scale-95" : ""
+      } ${
+        selected ? "ring-2 ring-blue-500 ring-offset-1 font-semibold shadow-xs" : ""
+      } ${className}`}
     >
-      <span className="truncate max-w-30">{tag.name}</span>
+      <span
+        className="h-1.5 w-1.5 rounded-full shrink-0"
+        style={{ backgroundColor: styles.dot }}
+      />
+      <span className="truncate max-w-32">{tag.name}</span>
       {onRemove && (
         <button
           type="button"
@@ -47,7 +53,7 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
             e.stopPropagation();
             onRemove();
           }}
-          className="ml-0.5 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/20 focus:outline-none cursor-pointer"
+          className="ml-0.5 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/10 dark:hover:bg-white/10 focus:outline-none cursor-pointer text-gray-500 hover:text-gray-700"
           aria-label={`Remove tag ${tag.name}`}
         >
           <XIcon size={10} />

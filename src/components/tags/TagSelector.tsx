@@ -94,7 +94,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
             {/* Selected Tags Display & Trigger */}
             <div
                 onClick={() => setIsOpen((prev) => !prev)}
-                className="flex flex-wrap items-center gap-1.5 min-h-[38px] w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-(--bg) p-1.5 cursor-pointer focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500"
+                className="flex flex-wrap items-center gap-1.5 min-h-[38px] w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-1.5 cursor-pointer focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-colors"
             >
                 {selectedTags.length === 0 ? (
                     <span className="text-xs text-gray-400 px-1.5">{placeholder}</span>

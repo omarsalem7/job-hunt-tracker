@@ -4,7 +4,6 @@ import { PublicRoute } from "./components/auth/PublicRoute";
 import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import { DashboardPage } from "./pages/DashboardPage";
-import { ContactsPage } from "./pages/ContactsPage";
 
 function App() {
   return (
@@ -39,14 +38,14 @@ function App() {
         />
 
         {/* Protected Contacts Route */}
-        <Route
+        {/* <Route
           path="/contacts"
           element={
             <ProtectedRoute>
               <ContactsPage />
             </ProtectedRoute>
           }
-        />
+        /> */}
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

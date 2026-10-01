@@ -48,7 +48,7 @@ export function KanbanBoard({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 p-6 overflow-x-auto min-h-[calc(100vh-140px)]">
+      <div className="flex gap-5 overflow-x-auto pb-8 w-full max-w-[1600px] mx-auto items-start">
         {STAGES.map((stage) => (
           <KanbanColumn
             key={stage}

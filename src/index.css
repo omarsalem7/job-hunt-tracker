@@ -1,17 +1,37 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 :root {
-  --bg: #ffffff;
-  --text: #111827;
-  --border: #e5e7eb;
-  --bg-column: #f3f4f6;
-  --bg-column-hover: #e5e7eb;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --bg-column: #f1f5f9;
+  --bg-column-hover: #e2e8f0;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
 }
 
-[data-theme="dark"] {
-  --bg: #111827;
-  --text: #f3f4f6;
-  --border: #374151;
-  --bg-column: #1f2937;
-  --bg-column-hover: #374151;
+[data-theme="dark"],
+.dark {
+  --bg: #090d16;
+  --card-bg: #111827;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #1e293b;
+  --border-subtle: #172033;
+  --bg-column: #0f172a;
+  --bg-column-hover: #1e293b;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
 }
