@@ -1,24 +1,40 @@
-import { useState } from "react";
-import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  type DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import type { Application, Stage } from "../../types";
 import {
   useUpdateStage,
   useDeleteApplication,
 } from "../../hooks/useApplications";
 import { KanbanColumn } from "./KanbanColumn";
-import { ApplicationContactsModal } from "../contacts/ApplicationContactsModal";
 
 const STAGES: Stage[] = ["applied", "interview", "offer", "rejected"];
 
 interface KanbanBoardProps {
   applications: Application[];
+  onSelectApplication: (application: Application) => void;
 }
 
-export function KanbanBoard({ applications }: KanbanBoardProps) {
+export function KanbanBoard({
+  applications,
+  onSelectApplication,
+}: KanbanBoardProps) {
   const { mutate: updateStage } = useUpdateStage();
   const { mutate: deleteApplication } = useDeleteApplication();
-  const [selectedAppForContacts, setSelectedAppForContacts] =
-    useState<Application | null>(null);
+
+  // Require 8px drag movement before initiating drag
+  // This allows clean card click interactions without accidental drag
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -31,26 +47,18 @@ export function KanbanBoard({ applications }: KanbanBoardProps) {
   };
 
   return (
-    <>
-      <DndContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 p-6 overflow-x-auto">
-          {STAGES.map((stage) => (
-            <KanbanColumn
-              key={stage}
-              stage={stage}
-              applications={applications.filter((a) => a.stage === stage)}
-              onDelete={(id) => deleteApplication(id)}
-              onViewContacts={(app) => setSelectedAppForContacts(app)}
-            />
-          ))}
-        </div>
-      </DndContext>
-
-      <ApplicationContactsModal
-        application={selectedAppForContacts}
-        isOpen={Boolean(selectedAppForContacts)}
-        onClose={() => setSelectedAppForContacts(null)}
-      />
-    </>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <div className="flex gap-4 p-6 overflow-x-auto min-h-[calc(100vh-140px)]">
+        {STAGES.map((stage) => (
+          <KanbanColumn
+            key={stage}
+            stage={stage}
+            applications={applications.filter((a) => a.stage === stage)}
+            onDelete={(id) => deleteApplication(id)}
+            onSelect={onSelectApplication}
+          />
+        ))}
+      </div>
+    </DndContext>
   );
 }

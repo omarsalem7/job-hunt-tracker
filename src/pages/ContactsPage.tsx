@@ -4,6 +4,7 @@ import { useContactsQuery, useDeleteContact } from "../hooks/useContacts";
 import { useApplicationsQuery } from "../hooks/useApplications";
 import { ContactFormModal } from "../components/contacts/ContactFormModal";
 import type { Contact } from "../types";
+import { UsersIcon, MailIcon, PhoneIcon, ExternalLinkIcon, MoonIcon, SunIcon } from "../components/common/Icons";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
 
@@ -84,10 +85,10 @@ export function ContactsPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={toggleTheme}
-            className="rounded border border-(--border) px-3 py-2 text-sm cursor-pointer"
-            title="Toggle theme"
+            className="rounded border border-(--border) px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
           >
-            {theme === "light" ? "🌙" : "☀️"}
+            {theme === "light" ? <MoonIcon size={16} /> : <SunIcon size={16} />}
           </button>
           {user && (
             <div className="flex items-center gap-2 pl-2 border-l border-(--border)">
@@ -153,7 +154,7 @@ export function ContactsPage() {
           </div>
         ) : filteredContacts.length === 0 ? (
           <div className="rounded-xl border border-dashed border-(--border) p-12 text-center">
-            <div className="text-3xl mb-2">👥</div>
+            <UsersIcon size={36} className="text-gray-400 mx-auto mb-2" />
             <h3 className="text-base font-medium">No contacts found</h3>
             <p className="mt-1 text-sm text-gray-500">
               {search || selectedAppFilter !== "all"
@@ -222,7 +223,7 @@ export function ContactsPage() {
                   <div className="mt-4 space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
                     {contact.email && (
                       <div className="flex items-center gap-2 truncate">
-                        <span className="text-gray-400">✉</span>
+                        <MailIcon size={14} className="text-gray-400 shrink-0" />
                         <a
                           href={`mailto:${contact.email}`}
                           className="hover:underline text-blue-600 dark:text-blue-400 truncate"
@@ -233,7 +234,7 @@ export function ContactsPage() {
                     )}
                     {contact.phone && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400">📞</span>
+                        <PhoneIcon size={14} className="text-gray-400 shrink-0" />
                         <a
                           href={`tel:${contact.phone}`}
                           className="hover:underline"
@@ -244,7 +245,7 @@ export function ContactsPage() {
                     )}
                     {contact.linkedInUrl && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400">🔗</span>
+                        <ExternalLinkIcon size={14} className="text-gray-400 shrink-0" />
                         <a
                           href={contact.linkedInUrl}
                           target="_blank"

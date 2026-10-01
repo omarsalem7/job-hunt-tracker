@@ -50,3 +50,17 @@ export function useDeleteApplication() {
         },
     });
 }
+
+// 5. Hook to Set Application Tags
+export function useSetApplicationTags() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, tagIds }: { id: string | number; tagIds: number[] }) =>
+            applicationsApi.setTags(id, tagIds),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: APPLICATIONS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: ['tags'] });
+        },
+    });
+}

@@ -5,10 +5,11 @@ import type {
     Stage,
     CreateApplicationDto,
     UpdateStageDto,
+    SetApplicationTagsDto,
     PaginatedResponse,
 } from '../types';
 
-export type { CreateApplicationDto, UpdateStageDto };
+export type { CreateApplicationDto, UpdateStageDto, SetApplicationTagsDto };
 
 export const applicationsApi = {
     // GET /applications
@@ -30,6 +31,14 @@ export const applicationsApi = {
         return apiClient<Application>(`/applications/${id}`, {
             method: 'PATCH',
             data: { stage },
+        });
+    },
+
+    // PUT /applications/:id/tags
+    setTags: async (id: string | number, tagIds: number[]): Promise<Application> => {
+        return apiClient<Application>(`/applications/${id}/tags`, {
+            method: 'PUT',
+            data: { tagIds },
         });
     },
 

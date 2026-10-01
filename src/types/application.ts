@@ -1,3 +1,5 @@
+import type { Tag } from './tag';
+
 export type Stage = 'applied' | 'interview' | 'offer' | 'rejected';
 
 export interface Application {
@@ -8,7 +10,7 @@ export interface Application {
     stage: Stage;
     appliedDate: string;
     notes?: string | null;
-    tags?: string[];
+    tags?: Tag[];
     createdAt?: string;
     updatedAt?: string;
 }
@@ -19,8 +21,13 @@ export interface CreateApplicationDto {
     stage: Stage;
     appliedDate: string;
     notes?: string;
+    tagIds?: number[];
 }
 
 export interface UpdateStageDto {
     stage: Stage;
+}
+
+export interface SetApplicationTagsDto {
+    tagIds: number[];
 }

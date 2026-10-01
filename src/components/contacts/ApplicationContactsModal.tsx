@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Application, Contact } from "../../types";
 import { useContactsQuery, useDeleteContact } from "../../hooks/useContacts";
 import { ContactFormModal } from "./ContactFormModal";
+import { MailIcon, PhoneIcon, ExternalLinkIcon, XIcon } from "../common/Icons";
 
 interface ApplicationContactsModalProps {
   application: Application | null;
@@ -65,9 +66,9 @@ export function ApplicationContactsModal({
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl font-bold cursor-pointer"
+              className="rounded-lg p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
             >
-              ×
+              <XIcon size={18} />
             </button>
           </div>
 
@@ -138,17 +139,19 @@ export function ApplicationContactsModal({
                     {contact.email && (
                       <a
                         href={`mailto:${contact.email}`}
-                        className="hover:underline flex items-center gap-1 text-blue-600 dark:text-blue-400"
+                        className="hover:underline flex items-center gap-1.5 text-blue-600 dark:text-blue-400"
                       >
-                        ✉ {contact.email}
+                        <MailIcon size={13} />
+                        <span>{contact.email}</span>
                       </a>
                     )}
                     {contact.phone && (
                       <a
                         href={`tel:${contact.phone}`}
-                        className="hover:underline flex items-center gap-1"
+                        className="hover:underline flex items-center gap-1.5"
                       >
-                        📞 {contact.phone}
+                        <PhoneIcon size={13} />
+                        <span>{contact.phone}</span>
                       </a>
                     )}
                     {contact.linkedInUrl && (
@@ -156,9 +159,10 @@ export function ApplicationContactsModal({
                         href={contact.linkedInUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                        className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5"
                       >
-                        🔗 LinkedIn
+                        <ExternalLinkIcon size={13} />
+                        <span>LinkedIn</span>
                       </a>
                     )}
                   </div>
