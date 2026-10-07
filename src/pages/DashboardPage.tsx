@@ -19,6 +19,7 @@ import {
   ShareIcon,
 } from "../components/common/Icons";
 import { ShareModal } from "../components/share/ShareModal";
+import { NotificationBell } from "../components/notifications/NotificationBell";
 import { useTheme } from "../hooks/useTheme";
 import { ErrorBoundary } from "../components/ErrorBoundary/ErrorBoundary";
 import { useAuth } from "../hooks/useAuth";
@@ -172,6 +173,9 @@ export function DashboardPage() {
               <ShareIcon size={13} className="text-blue-600 dark:text-blue-400" />
               <span>Share</span>
             </button>
+
+            {/* Notification Bell */}
+            <NotificationBell onSelectApplication={handleSelectApplication} />
 
             {/* Theme Toggle */}
             <button

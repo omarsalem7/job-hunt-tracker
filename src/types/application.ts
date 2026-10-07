@@ -2,6 +2,11 @@ import type { Tag } from './tag';
 
 export type Stage = 'applied' | 'interview' | 'offer' | 'rejected';
 
+export type FollowUpStatus =
+    | 'NEEDS_FIRST_FOLLOW_UP'
+    | 'NEEDS_SECOND_FOLLOW_UP'
+    | 'STALE_GHOSTED';
+
 export interface Application {
     id: string | number;
     userId?: number;
@@ -11,8 +16,20 @@ export interface Application {
     appliedDate: string;
     notes?: string | null;
     tags?: Tag[];
+    lastFollowUpAt?: string | null;
+    snoozeFollowUpUntil?: string | null;
+    followUpStatus?: FollowUpStatus | null;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface NotificationsResponse {
+    count: number;
+    items: Application[];
+}
+
+export interface SnoozeFollowUpDto {
+    days?: number;
 }
 
 export interface CreateApplicationDto {

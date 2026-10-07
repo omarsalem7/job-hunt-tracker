@@ -7,6 +7,8 @@ import type {
     UpdateStageDto,
     SetApplicationTagsDto,
     PaginatedResponse,
+    NotificationsResponse,
+    SnoozeFollowUpDto,
 } from '../types';
 
 export type { CreateApplicationDto, UpdateStageDto, SetApplicationTagsDto };
@@ -46,6 +48,26 @@ export const applicationsApi = {
     delete: async (id: string | number): Promise<void> => {
         return apiClient<void>(`/applications/${id}`, {
             method: 'DELETE',
+        });
+    },
+
+    // GET /applications/notifications
+    getNotifications: async (): Promise<NotificationsResponse> => {
+        return apiClient<NotificationsResponse>('/applications/notifications');
+    },
+
+    // PATCH /applications/:id/followed-up
+    markFollowedUp: async (id: string | number): Promise<Application> => {
+        return apiClient<Application>(`/applications/${id}/followed-up`, {
+            method: 'PATCH',
+        });
+    },
+
+    // PATCH /applications/:id/snooze
+    snoozeFollowUp: async (id: string | number, dto?: SnoozeFollowUpDto): Promise<Application> => {
+        return apiClient<Application>(`/applications/${id}/snooze`, {
+            method: 'PATCH',
+            data: dto,
         });
     },
 };

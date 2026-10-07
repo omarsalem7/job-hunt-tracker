@@ -3,6 +3,7 @@ import type { Application, Contact, Stage } from "../../types";
 import { TagSelector } from "../tags/TagSelector";
 import { useSetApplicationTags, useUpdateStage } from "../../hooks/useApplications";
 import { useContactsQuery, useDeleteContact } from "../../hooks/useContacts";
+import { useMarkFollowedUp, useSnoozeFollowUp } from "../../hooks/useNotifications";
 import { ContactFormModal } from "../contacts/ContactFormModal";
 import {
   TagIcon,
@@ -15,6 +16,9 @@ import {
   XIcon,
   PencilIcon,
   TrashIcon,
+  ClockIcon,
+  CheckIcon,
+  BellIcon,
 } from "../common/Icons";
 
 interface ApplicationDetailDrawerProps {
@@ -61,6 +65,8 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
   const { mutate: updateStage } = useUpdateStage();
   const { data: allContacts = [], isLoading: isLoadingContacts } = useContactsQuery();
   const { mutateAsync: deleteContact } = useDeleteContact();
+  const markFollowedUp = useMarkFollowedUp();
+  const snoozeFollowUp = useSnoozeFollowUp();
 
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
@@ -78,6 +84,7 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
 
   if (!application) return null;
 
+  const needsFollowUp = Boolean(application.followUpStatus);
   const currentTagIds = (application.tags ?? []).map((t) => t.id);
 
   const linkedContacts = Array.isArray(allContacts)
@@ -203,6 +210,116 @@ export const ApplicationDetailDrawer: React.FC<ApplicationDetailDrawerProps> = (
               </span>
             </div>
           </div>
+
+          {/* Follow-Up Quick Actions Section */}
+          <section className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-4 shadow-xs space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <BellIcon size={15} className="text-blue-600 dark:text-blue-400" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Follow-Up Radar
+                </h3>
+              </div>
+
+              {/* Status Pill Badge */}
+              {application.followUpStatus === "NEEDS_FIRST_FOLLOW_UP" && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                  1st Follow-Up Due
+                </span>
+              )}
+              {application.followUpStatus === "NEEDS_SECOND_FOLLOW_UP" && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                  2nd Follow-Up Due
+                </span>
+              )}
+              {application.followUpStatus === "STALE_GHOSTED" && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  Stale / Ghosted
+                </span>
+              )}
+              {!application.followUpStatus &&
+                application.snoozeFollowUpUntil &&
+                new Date(application.snoozeFollowUpUntil) > new Date() && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                    <ClockIcon size={11} />
+                    Snoozed
+                  </span>
+                )}
+              {!application.followUpStatus &&
+                (!application.snoozeFollowUpUntil ||
+                  new Date(application.snoozeFollowUpUntil) <= new Date()) && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    Up to date
+                  </span>
+                )}
+            </div>
+
+            {/* Follow-up Timestamp Details */}
+            <div className="grid grid-cols-2 gap-2 text-xs py-1">
+              <div>
+                <span className="text-[11px] text-slate-400 block">Last Followed Up</span>
+                <span className="font-medium text-slate-800 dark:text-slate-200">
+                  {application.lastFollowUpAt
+                    ? new Date(application.lastFollowUpAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "None recorded"}
+                </span>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-400 block">Snooze Status</span>
+                <span className="font-medium text-slate-800 dark:text-slate-200">
+                  {application.snoozeFollowUpUntil &&
+                  new Date(application.snoozeFollowUpUntil) > new Date()
+                    ? `Until ${new Date(application.snoozeFollowUpUntil).toLocaleDateString(
+                        undefined,
+                        {
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}`
+                    : "Active (not snoozed)"}
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Action Buttons - Only appear if this role needs follow-up */}
+            {needsFollowUp && (
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  disabled={markFollowedUp.isPending}
+                  onClick={() => markFollowedUp.mutate(application.id)}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                  title="Mark this role as followed-up today"
+                >
+                  <CheckIcon size={14} />
+                  <span>
+                    {markFollowedUp.isPending ? "Updating..." : "Mark Followed Up"}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={snoozeFollowUp.isPending}
+                  onClick={() => snoozeFollowUp.mutate({ id: application.id, days: 7 })}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                  title="Snooze notifications for 7 days"
+                >
+                  <ClockIcon size={14} />
+                  <span>
+                    {snoozeFollowUp.isPending ? "Snoozing..." : "Snooze 7 Days"}
+                  </span>
+                </button>
+              </div>
+            )}
+          </section>
 
           {/* Tags Section */}
           <section className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/60 p-4 shadow-xs space-y-3">

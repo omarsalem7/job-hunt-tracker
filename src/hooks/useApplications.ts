@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { applicationsApi, type CreateApplicationDto } from '../api/applications';
 import type { Stage } from '../types';
+import { NOTIFICATIONS_QUERY_KEY } from './useNotifications';
 
 export const APPLICATIONS_QUERY_KEY = ['applications'] as const;
 
@@ -22,6 +23,7 @@ export function useCreateApplication() {
         onSuccess: () => {
             // Invalidate cache so the board automatically shows the new item!
             queryClient.invalidateQueries({ queryKey: APPLICATIONS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
         },
     });
 }
@@ -35,6 +37,7 @@ export function useUpdateStage() {
             applicationsApi.updateStage(id, stage),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: APPLICATIONS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
         },
     });
 }
@@ -47,6 +50,7 @@ export function useDeleteApplication() {
         mutationFn: (id: string | number) => applicationsApi.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: APPLICATIONS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
         },
     });
 }
