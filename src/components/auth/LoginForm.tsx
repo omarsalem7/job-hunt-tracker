@@ -1,13 +1,15 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { GoogleLoginButton } from './GoogleLoginButton';
 
 export function LoginForm() {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(searchParams.get('error'));
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: FormEvent) => {
@@ -80,6 +82,15 @@ export function LoginForm() {
                         {isSubmitting ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
+
+                <div className="relative flex items-center justify-center my-4">
+                    <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                    <span className="absolute px-3 bg-white dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
+                        Or continue with
+                    </span>
+                </div>
+
+                <GoogleLoginButton disabled={isSubmitting} />
 
                 <div className="text-center pt-2">
                     <Link

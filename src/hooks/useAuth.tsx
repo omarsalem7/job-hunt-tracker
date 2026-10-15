@@ -8,6 +8,7 @@ interface AuthContextType {
     isLoading: boolean;
     login: (credentials: AuthCredentials) => Promise<void>;
     register: (credentials: AuthCredentials) => Promise<void>;
+    loginWithToken: (token: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -50,6 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(res.user);
     };
 
+    const loginWithToken = async (token: string) => {
+        tokenStorage.set(token);
+        const currentUser = await authApi.getMe();
+        setUser(currentUser);
+    };
+
     const logout = () => {
         authApi.logout();
         setUser(null);
@@ -63,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isLoading,
                 login,
                 register,
+                loginWithToken,
                 logout,
             }}
         >

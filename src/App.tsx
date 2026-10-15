@@ -5,6 +5,7 @@ import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import { DashboardPage } from "./pages/DashboardPage";
 import { SharedBoardPage } from "./pages/SharedBoardPage";
+import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
             </PublicRoute>
           }
         />
+
+        {/* OAuth Callback Route */}
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         {/* Public Shared Board Route */}
         <Route path="/share/:token" element={<SharedBoardPage />} />

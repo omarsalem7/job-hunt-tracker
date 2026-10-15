@@ -1,4 +1,8 @@
-const BASE_URL = 'http://localhost:3000';
+export const API_BASE_URL =
+    (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_URL ||
+    'http://localhost:3000';
+export const GOOGLE_AUTH_URL = `${API_BASE_URL}/auth/google`;
+const BASE_URL = API_BASE_URL;
 const TOKEN_KEY = 'job_hunt_token';
 
 // Helper to manage token in localStorage
