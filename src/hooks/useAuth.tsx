@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { authApi, type AuthUser, type AuthCredentials } from '../api/auth';
+import {
+    authApi,
+    type AuthUser,
+    type AuthCredentials,
+    type RegisterResponse,
+    type VerifyEmailPayload,
+} from '../api/auth';
 import { tokenStorage } from '../api/client';
 
 interface AuthContextType {
@@ -7,7 +13,8 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (credentials: AuthCredentials) => Promise<void>;
-    register: (credentials: AuthCredentials) => Promise<void>;
+    register: (credentials: AuthCredentials) => Promise<RegisterResponse>;
+    verifyEmail: (payload: VerifyEmailPayload) => Promise<void>;
     loginWithToken: (token: string) => Promise<void>;
     logout: () => void;
 }
@@ -48,6 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = async (credentials: AuthCredentials) => {
         const res = await authApi.register(credentials);
+        if (res.accessToken) {
+            setUser(res.user);
+        }
+        return res;
+    };
+
+    const verifyEmail = async (payload: VerifyEmailPayload) => {
+        const res = await authApi.verifyEmail(payload);
         setUser(res.user);
     };
 
@@ -70,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isLoading,
                 login,
                 register,
+                verifyEmail,
                 loginWithToken,
                 logout,
             }}

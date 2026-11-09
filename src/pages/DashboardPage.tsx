@@ -17,6 +17,7 @@ import {
   PlusIcon,
   BriefcaseIcon,
   ShareIcon,
+  SparklesIcon,
 } from "../components/common/Icons";
 import { ShareModal } from "../components/share/ShareModal";
 import { NotificationBell } from "../components/notifications/NotificationBell";
@@ -28,10 +29,15 @@ import type { Application } from "../types";
 export function DashboardPage() {
   const { user, logout } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const [openFormWithAi, setOpenFormWithAi] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
-  const [selectedAppId, setSelectedAppId] = useState<string | number | null>(null);
+  const [selectedAppId, setSelectedAppId] = useState<string | number | null>(
+    null,
+  );
   const [search, setSearch] = useState("");
-  const [selectedTagFilterIds, setSelectedTagFilterIds] = useState<number[]>([]);
+  const [selectedTagFilterIds, setSelectedTagFilterIds] = useState<number[]>(
+    [],
+  );
   const deferredSearch = useDeferredValue(search);
   const palette = useCommandPalette();
 
@@ -60,7 +66,7 @@ export function DashboardPage() {
       if (selectedTagFilterIds.length > 0) {
         const appTagIds = (a.tags || []).map((t) => t.id);
         const hasSelectedTag = selectedTagFilterIds.some((id) =>
-          appTagIds.includes(id)
+          appTagIds.includes(id),
         );
         if (!hasSelectedTag) return false;
       }
@@ -72,12 +78,16 @@ export function DashboardPage() {
   // Keep drawer's application always in sync with fresh React Query cache
   const selectedApplication = useMemo(() => {
     if (!selectedAppId) return null;
-    return applications.find((a) => String(a.id) === String(selectedAppId)) ?? null;
+    return (
+      applications.find((a) => String(a.id) === String(selectedAppId)) ?? null
+    );
   }, [applications, selectedAppId]);
 
   const toggleTagFilter = (tagId: number) => {
     setSelectedTagFilterIds((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
     );
   };
 
@@ -90,7 +100,22 @@ export function DashboardPage() {
   };
 
   const commands = [
-    { id: "add", label: "Add application", action: () => setShowForm(true) },
+    {
+      id: "add",
+      label: "Add application",
+      action: () => {
+        setOpenFormWithAi(false);
+        setShowForm(true);
+      },
+    },
+    {
+      id: "ai-parse",
+      label: "Auto-fill application with AI",
+      action: () => {
+        setOpenFormWithAi(true);
+        setShowForm(true);
+      },
+    },
     {
       id: "manage-tags",
       label: "Manage tags",
@@ -157,12 +182,12 @@ export function DashboardPage() {
             </button>
 
             {/* Match Score Button */}
-            <button
+            {/* <button
               onClick={() => setShowScorer(true)}
               className="rounded-lg border border-(--border) bg-(--card-bg) px-3 py-1.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors shadow-xs"
             >
               Match score
-            </button>
+            </button> */}
 
             {/* Share Board Button */}
             <button
@@ -170,7 +195,10 @@ export function DashboardPage() {
               className="inline-flex items-center gap-1.5 rounded-lg border border-(--border) bg-(--card-bg) px-3 py-1.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors shadow-xs"
               title="Share board with recruiters or mentors"
             >
-              <ShareIcon size={13} className="text-blue-600 dark:text-blue-400" />
+              <ShareIcon
+                size={13}
+                className="text-blue-600 dark:text-blue-400"
+              />
               <span>Share</span>
             </button>
 
@@ -183,7 +211,11 @@ export function DashboardPage() {
               className="rounded-lg border border-(--border) bg-(--card-bg) p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors shadow-xs"
               title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             >
-              {theme === "light" ? <MoonIcon size={15} /> : <SunIcon size={15} />}
+              {theme === "light" ? (
+                <MoonIcon size={15} />
+              ) : (
+                <SunIcon size={15} />
+              )}
             </button>
 
             {/* User Session */}
@@ -276,9 +308,27 @@ export function DashboardPage() {
               </button>
             </div>
 
-            {/* Add Application Primary Button */}
+            {/* Add Application Primary Button & AI Import */}
             <button
-              onClick={() => setShowForm(true)}
+              onClick={() => {
+                setOpenFormWithAi(true);
+                setShowForm(true);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 cursor-pointer shadow-xs transition-colors"
+              title="Auto-fill application by pasting a job description"
+            >
+              <SparklesIcon
+                size={13}
+                className="text-indigo-600 dark:text-indigo-400"
+              />
+              <span>AI Import</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setOpenFormWithAi(false);
+                setShowForm(true);
+              }}
               className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 cursor-pointer shadow-xs transition-colors"
             >
               <PlusIcon size={13} />
@@ -333,6 +383,7 @@ export function DashboardPage() {
             className="w-full max-w-lg rounded-xl border border-(--border) bg-(--bg) p-6 shadow-2xl text-(--text) max-h-[90vh] flex flex-col"
           >
             <AddApplicationForm
+              initialShowAi={openFormWithAi}
               onDone={() => setShowForm(false)}
               onOpenTagManager={() => {
                 setShowForm(false);

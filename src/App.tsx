@@ -3,6 +3,9 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { PublicRoute } from "./components/auth/PublicRoute";
 import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
+import { VerifyEmailForm } from "./components/auth/VerifyEmailForm";
+import { ForgotPasswordForm } from "./components/auth/ForgotPasswordForm";
+import { ResetPasswordForm } from "./components/auth/ResetPasswordForm";
 import { DashboardPage } from "./pages/DashboardPage";
 import { SharedBoardPage } from "./pages/SharedBoardPage";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
@@ -25,6 +28,30 @@ function App() {
           element={
             <PublicRoute>
               <RegisterForm />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/verify-email"
+          element={
+            <PublicRoute>
+              <VerifyEmailForm />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPasswordForm />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPasswordForm />
             </PublicRoute>
           }
         />
