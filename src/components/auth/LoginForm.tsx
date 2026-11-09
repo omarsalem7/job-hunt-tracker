@@ -7,21 +7,28 @@ export function LoginForm() {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(searchParams.get('email') || '');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(searchParams.get('error'));
+    const [successMessage] = useState<string | null>(searchParams.get('message'));
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [needsVerification, setNeedsVerification] = useState(false);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
+        setNeedsVerification(false);
         setIsSubmitting(true);
 
         try {
             await login({ email, password });
             navigate('/');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to sign in');
+            const msg = err instanceof Error ? err.message : 'Failed to sign in';
+            setError(msg);
+            if (msg.toLowerCase().includes('verify your email')) {
+                setNeedsVerification(true);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -37,9 +44,23 @@ export function LoginForm() {
                     </p>
                 </div>
 
+                {successMessage && (
+                    <div className="p-3 text-sm text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                        {successMessage}
+                    </div>
+                )}
+
                 {error && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800">
-                        {error}
+                    <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800 space-y-2">
+                        <p>{error}</p>
+                        {needsVerification && (
+                            <Link
+                                to={`/verify-email?email=${encodeURIComponent(email)}`}
+                                className="inline-flex items-center text-xs font-semibold text-red-700 dark:text-red-300 hover:underline"
+                            >
+                                Enter verification code &rarr;
+                            </Link>
+                        )}
                     </div>
                 )}
 
@@ -60,9 +81,17 @@ export function LoginForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Password
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Password
+                            </label>
+                            <Link
+                                to="/forgot-password"
+                                className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
                         <input
                             type="password"
                             required

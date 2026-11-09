@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GOOGLE_AUTH_URL } from '../../api/client';
 
 interface GoogleLoginButtonProps {
@@ -11,6 +11,40 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
     disabled = false,
 }) => {
     const [isRedirecting, setIsRedirecting] = useState(false);
+
+    // Reset redirecting state when user returns via browser back button (bfcache), focuses window, or tab becomes visible
+    useEffect(() => {
+        const handleReset = () => {
+            setIsRedirecting(false);
+        };
+
+        window.addEventListener('pageshow', handleReset);
+        window.addEventListener('focus', handleReset);
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                setIsRedirecting(false);
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('pageshow', handleReset);
+            window.removeEventListener('focus', handleReset);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+
+    // Fallback timer to prevent getting stuck if navigation is cancelled or delayed
+    useEffect(() => {
+        if (!isRedirecting) return;
+
+        const timeout = setTimeout(() => {
+            setIsRedirecting(false);
+        }, 8000);
+
+        return () => clearTimeout(timeout);
+    }, [isRedirecting]);
 
     const handleClick = () => {
         if (disabled || isRedirecting) return;

@@ -17,8 +17,12 @@ export function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      await register({ email, password });
-      navigate("/");
+      const res = await register({ email, password });
+      if (res.accessToken) {
+        navigate("/");
+      } else {
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to register account",
